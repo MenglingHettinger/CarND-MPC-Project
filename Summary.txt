@@ -1,0 +1,32 @@
+1. Describe the model in detail.
+
+MPC model predict the change in the dependent variables (state) of the system that will cause the change in the indepedent variables (actuators). 
+At time t the current state is sampled and a cost minimizing control strategy is computed (via a numerical minimization algorithm) for a relatively short time horizon in the future: t+T.
+
+Vehicle location (x, y), vehicle pose (phi), vehicle velocity (v), crosstrack error(cte) and acceleration (a) at time t + T is calculated using the values from t. A set of constrains are also given for a given system. The cost function is defined by adding 1) errors in crosstrack, heading angle and velocity 2) actuations values and 3) the sudden change in actuators. 
+
+The model is:
+x_t+1 = x_t + v_t * cos(phi_t) * dt
+y_t+1 = y_t + v_t * sin(phi_t) * dt
+phi_t+1 = phi_t + v_t/Lf * delta_t * dt
+v_t+1 = v_t + a_t * dt
+cte_t+1 = f(x_t) - y_t+ (v_t * sin(epsi_t) * dt)
+epsi_t+1 = phi_t - epsi + (v_t/Lf * delta_t * dt)
+
+
+with constraints:
+delta = [ -0.436332, 0.436332]
+a = [-1, 1]
+
+
+
+2. Choice of Timestep Length and Elapsed Duration (N & dt).
+
+If the N is too big and dt is too small, it will take a long time to compute the MPC. If N is too small and dt is too big, the accuracy of the model will not be good. The final value chosed for N = 10 and dt = 0.1, which means the optimizer is considering a 1 sec data for determining the trajectory. 
+
+3. Polynomial Fitting and MPC Preprocessing
+Prior to the MPC precedure, waypoints were transformed to vehicle coordinates and shifted by the vehicle location. By doing this, the host vehicle will be at location (0, 0). 
+
+
+4. Model Predictive Control with Latency
+The kinetic equation has been modified to take into account the values 2 timestamps ago. 
